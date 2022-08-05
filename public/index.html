@@ -1,6 +1,8 @@
 <html>
 <head>
     <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/escenario.css">
+
    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,9 +17,44 @@
 </head>
 <body>
 
+<h2>Juego</h2>
+<div class="alert alert-primary" role="alert" id="reloj">
+</div>
+<div id="game">
+    <div id="left"></div>
+    <div id="right"></div>
+    <div id="character"></div>
+</div>
+
+
 <canvas></canvas>
 
 <script>
+
+var arregloColorJugador =  ["red", "blue","pink","crimson","green","#DED822","#5BDE22","#22BCDE","#A7B2B5","#C381FD","#FD81DF"];
+var longitudArregloColorJugador = arregloColorJugador.length;
+
+/**
+ *
+ * @param {*} longitudArreglo : representa el valor maximo del numero a generar
+ * @param {*} numeroMinimo : representa el valor minimo del numero a generar
+ * @returns : devuelve el numero generado
+ * la funcion generarPosicionArreglo se utiliza para devolver una posicion de los numeros
+ * del arreglo que contiene las imagenes de game over, imagen del player o color del jugador
+ */
+function generarPosicionArreglo(longitudArreglo,numeroMinimo) {
+    var number = Math.floor(Math.random() * longitudArreglo + numeroMinimo);
+    return number;
+}
+
+var randomColor = generarPosicionArreglo(longitudArregloColorJugador,0);
+var colorJugador = arregloColorJugador[randomColor];
+
+
+/*
+* Implementacion de Socket
+*/
+
 
 const socket = io()
 
@@ -98,10 +135,11 @@ const FACING_RIGHT = 3
 const gameState = {
     players: [
         {
-            username: prompt("What's your username?"),
+            username: prompt("¿Cual es tu nombre?"),
             playerId: Math.floor(Math.random() * 100000000),
             x: 50, y: 50,
-            color: '#ae83c3',
+            //aqui le pasamos el color que generamos por medio de la funcion generar color jugador
+            color: colorJugador,
             rotation: FACING_DOWN,
             snowballs: []
         }
