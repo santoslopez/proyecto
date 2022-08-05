@@ -1,5 +1,5 @@
 {
-    "name": "snowball-fight-mog",
+    "name": "proyecto",
     "version": "1.0.0",
     "description": "",
     "main": "server.js",
@@ -14,12 +14,12 @@
     },
     "repository": {
       "type": "git",
-      "url": "git+https://github.com/santoslopez/snowball-fight-mog.git"
+      "url": "git+https://github.com/santoslopez/proyecto.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-      "url": "https://github.com/santoslopez/snowball-fight-mog/issues"
+      "url": "https://github.com/santoslopez/proyecto/issues"
     },
-    "homepage": "https://github.com/santoslopez/snowball-fight-mog#readme"
+    "homepage": "https://github.com/santoslopez/proyecto#readme"
 }
