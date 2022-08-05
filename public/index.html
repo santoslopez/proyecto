@@ -1,311 +1,180 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="css/escenario.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CC8 2022</title>
 
-   <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--script src="socketio.js"></script-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- Bootstrap CSS -->
+    <!--EXTRA CODE-->
+    <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel = "stylesheet" href = "css/menu.css">
 
 
 </head>
 <body>
 
-<h2>Juego</h2>
-<div class="alert alert-primary" role="alert" id="reloj">
-</div>
-<div id="game">
-    <div id="left"></div>
-    <div id="right"></div>
-    <div id="character"></div>
-</div>
 
-<canvas></canvas>
-
-<script>
-
-var arregloColorJugador =  ["red", "blue","pink","crimson","green","#DED822","#5BDE22","#22BCDE","#A7B2B5","#C381FD","#FD81DF"];
-var longitudArregloColorJugador = arregloColorJugador.length;
-
-/**
- *
- * @param {*} longitudArreglo : representa el valor maximo del numero a generar
- * @param {*} numeroMinimo : representa el valor minimo del numero a generar
- * @returns : devuelve el numero generado
- * la funcion generarPosicionArreglo se utiliza para devolver una posicion de los numeros
- * del arreglo que contiene las imagenes de game over, imagen del player o color del jugador
- */
-function generarPosicionArreglo(longitudArreglo,numeroMinimo) {
-    var number = Math.floor(Math.random() * longitudArreglo + numeroMinimo);
-    return number;
-}
-
-var randomColor = generarPosicionArreglo(longitudArregloColorJugador,0);
-var colorJugador = arregloColorJugador[randomColor];
+    <nav class = "nav-menu">
 
 
-/*
-* Implementacion de Socket
-*/
+
+        <div class = "nav-container">
 
 
-const socket = io()
+            <h3 class = "nav-brand">CC8 2022 - Nombre de nuestro juego</h3>
+            <button type = "button" id = "menu-show-btn">
+                <i class = "fas fa-bars"></i>
+            </button>
 
-const canvas = document.getElementsByTagName('canvas')[0]
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
+            <div class = "nav-overlay">
+                <div class = "nav-overlay-container">
+                    <button type = "button" id = "menu-hide-btn">
+                        <i class = "fas fa-close"></i>
+                    </button>
 
-const ctx = canvas.getContext('2d')
-// ctx.fillRect(50, 50, 100, 100)
+                    <ul class = "nav-links">
+                        <!--li><button class="hola" type="button" data-toggle="modal" data-target="#crearCodigoJuego">Crear codigo juego</button></li-->
+                        <!--li><button class="hola" type="button" data-toggle="modal" data-target="#unirseJuego">Unirse a juego</button></li-->
+                        <li><button class="hola" type="button" onclick="location.href='game.html'">Jugar</button></li>
+                        <!--li><button class="hola" type="button" onclick="location.href='game.html'">Nuevo Juego</button></li-->
+                        <li><button class="hola" type="button" data-toggle="modal" data-target="#exampleModalCenter2">Instrucciones</button></li>
+                        <li><button class="hola" type="button" data-toggle="modal" data-target="#exampleModalCenter1">Creditos</button></li>
+                    </ul>
 
-const keyboardState = {}
-
-function renderAvatar (player) {
-    if (player.eliminated) return
-
-    ctx.save()
-    ctx.translate(player.x, player.y)
-
-    // draw body
-    ctx.beginPath()
-    ctx.arc(0, 0, 20, 0, 2 * Math.PI)
-    ctx.closePath()
-    ctx.fillStyle = player.color
-    ctx.fill()
-
-    // draw username
-    ctx.textAlign = 'center'
-    ctx.fillStyle = 'black'
-    ctx.fillText(player.username, 0, 34)
-
-    // draw eyes
-    // rotate here prior to drawing the eyes,
-    // to make the eyes face that the avatar should have
-    switch (player.rotation) {
-        case FACING_DOWN: 
-            ctx.rotate(0)
-            break
-        case FACING_UP:
-            ctx.rotate(Math.PI)
-            break
-        case FACING_LEFT:
-            ctx.rotate(Math.PI / 2)
-            break
-        case FACING_RIGHT:
-            ctx.rotate(Math.PI * 1.5)
-            break
-    }
-    ctx.beginPath()
-    ctx.moveTo(-5, 5)
-    ctx.lineTo(-5, 17)
-    ctx.moveTo(5, 5)
-    ctx.lineTo(5, 17)
-    ctx.stroke()
-
-    ctx.restore()
-}
-
-function renderSnowball (snowball) {
-    ctx.save()
-    ctx.translate(snowball.x, snowball.y)
-
-    ctx.beginPath()
-    ctx.arc(0, 0, 8, 0, 2 * Math.PI)
-    ctx.closePath()
-    ctx.fillStyle = 'lightblue'
-    ctx.fill()
-
-    ctx.restore()
-}
-
-const SNOWBALL_SPEED = 5
-const PLAYER_SPEED = 3
-const FACING_UP = 2
-const FACING_DOWN = 0
-const FACING_LEFT = 1
-const FACING_RIGHT = 3
-
-const gameState = {
-    players: [
-        {
-            username: prompt("¿Cual es tu nombre?"),
-            playerId: Math.floor(Math.random() * 100000000),
-            x: 50, y: 50,
-            //aqui le pasamos el color que generamos por medio de la funcion generar color jugador
-            color: colorJugador,
-            rotation: FACING_DOWN,
-            snowballs: []
-        }
-    ]
-}
-
-const myPlayerId = gameState.players[0].playerId
-
-function render (state) {
-    ctx.fillStyle = 'white'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-    state.players.forEach(function (player) {
-        renderAvatar(player)
-
-        player.snowballs.forEach(function (snowball) {
-            renderSnowball(snowball)
-        })
-    })
-
-}
-
-const PLAYER_RADIUS = 20
-const SNOWBALL_RADIUS = 8
-
-function hitTestPlayerVsPlayer (playerA, playerB) {
-    return Math.sqrt(Math.pow(playerA.x - playerB.x, 2) + Math.pow(playerA.y - playerB.y, 2)) < (PLAYER_RADIUS * 2)
-}
-function hitTestPlayerVsSnowball (player, snowball) {
-    return Math.sqrt(Math.pow(player.x - snowball.x, 2) + Math.pow(player.y - snowball.y, 2)) < (PLAYER_RADIUS + SNOWBALL_RADIUS)
-}
-
-function logicStep (state) {
-    state.players.forEach(player => { // just another way of writing f
-        player.snowballs.forEach(snowball => {
-            snowball.x += snowball.vx
-            snowball.y += snowball.vy
-
-            if (snowball.x < 0 || snowball.x > window.innerWidth ||
-                snowball.y < 0 || snowball.y > window.innerHeight) {
-                snowball.remove = true
-            }
-        })
-        player.snowballs = player.snowballs.filter(snowball => {
-            const shouldBeKept = (snowball.remove !== true)
-            return shouldBeKept
-        })
-    })
-
-    // only moving player one now
-    const myPlayer = state.players[0]
-    if (!myPlayer.eliminated) {
-        if (keyboardState.w) {
-            myPlayer.y -= PLAYER_SPEED
-            myPlayer.rotation = FACING_UP
-        }
-        if (keyboardState.s) {
-            myPlayer.y += PLAYER_SPEED
-            myPlayer.rotation = FACING_DOWN
-        }
-        if (keyboardState.d) {
-            state.players[0].x += PLAYER_SPEED
-            myPlayer.rotation = FACING_RIGHT
-        }
-        if (keyboardState.a) {
-            state.players[0].x -= PLAYER_SPEED
-            myPlayer.rotation = FACING_LEFT
-        }
-    }
-
-    // collision algorithm
-    state.players.forEach(playerA => {
-        playerA.snowballs.forEach(snowball => {
-            state.players.forEach(playerB => {
-                if (playerA === playerB) {
-                    // don't hit yourself
-                    return
-                }
-
-                if (hitTestPlayerVsSnowball(playerB, snowball)) {
-                    snowball.remove = true
-                    if (playerB.playerId === myPlayerId) {
-                        // others must remove themselves
-                        playerB.eliminated = true
-                    }
-                }
-            })
-        })
-    })
-
-    // remove eliminated players
-    // state.players = state.players.filter(player => !player.eliminated)
-
-    socket.emit('stateUpdate', state.players[0])
-}
-
-function gameLoop () {
-    requestAnimationFrame(gameLoop)
-    logicStep(gameState)
-    render(gameState)
-}
-
-gameLoop()
+                </div>
 
 
-document.addEventListener('keydown', function (e) {
-    keyboardState[e.key] = true
 
-    if (e.key === ' ') { // spacebar lol
+            </div>
 
-        const myPlayer = gameState.players[0]
-        const snowball = {
-            x: myPlayer.x, y: myPlayer.y,
-            vx: 0, vy: 0
-        }
-
-        switch (myPlayer.rotation) {
-            case FACING_DOWN: 
-                snowball.vy = SNOWBALL_SPEED
-                break
-            case FACING_UP:
-                snowball.vy = -SNOWBALL_SPEED
-                break
-            case FACING_LEFT:
-                snowball.vx = -SNOWBALL_SPEED
-                break
-            case FACING_RIGHT:
-                snowball.vx = +SNOWBALL_SPEED
-                break
-        }
-
-        myPlayer.snowballs.push(snowball)
-    }
-})
-document.addEventListener('keyup', function (e) {
-    keyboardState[e.key] = false
-})
+        </div>
 
 
-socket.on('stateUpdateForwardedByServer', function (player) {
-    if (player.playerId === myPlayerId) {
-        // ignore own update
-        return
-    }
-
-    let playerWasFound = false
-    for (let i = 0; i < gameState.players.length; ++i) {
-        if (gameState.players[i].playerId === player.playerId) {
-            gameState.players[i] = player
-            playerWasFound = true
-            break // don't continue looping, pointless
-        }
-    }
-
-    if (!playerWasFound) {
-        // player we haven't seen before
-        gameState.players.push(player)
-    }
-})
-
-</script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-<script src="reloj.js"></script>
+    </nav>
 
 
+<!-- Modal  crear opcion de codigo para el juego -->
+<!--div class="modal fade" id="crearCodigoJuego" tabindex="-1" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Crear codigo de juego</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="inputCrearCodigoJuego" class="col-form-label">Codigo de juego:</label>
+            <input type="text" class="form-control" id="inputCrearCodigoJuego" required placeholder="Ingresar codigo de juego">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Enviar datos</button>
+      </div>
+    </div>
+  </div>
+</div-->
+
+
+
+<!-- Modal  crear opcion para unirse a un juego -->
+<!--div class="modal fade" id="unirseJuego" tabindex="-1" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Unirse a juego existente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="inputCodigoJuego" class="col-form-label">Codigo de juego:</label>
+            <input type="text" class="form-control" id="inputCodigoJuego" placeholder="Ingresar codigo para unirse a juego">
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">Nombre de jugador:</label>
+            <input type="text" class="form-control" id="inputNombreJugador" placeholder="Ingresar nombre de jugador">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Enviar datos</button>
+      </div>
+    </div>
+  </div>
+</div-->
+
+<!--morado protocolo ip
+verde tcp upd
+icmp necesita de un paquete de udp
+El acknolage es 0 -->
+
+
+
+    <!-- Modal  (Creditos)-->
+  <div class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">¿Quiénes somos?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+              <ul class="list-group">
+                <li class="list-group-item">Santos López Tzoy - 15002241</li>
+                <li class="list-group-item">Jair Alexander Flores Martínez - 18002715</li>
+                <li class="list-group-item">Gizeh Marisol García Castro - 17005256</li>
+                <li class="list-group-item">Vinicio José Recinos Calderón - 17001623</li>
+              </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+   <!-- Modal  (Instrucciones)-->
+   <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Reglas del juego</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+             <p>!Procura ser el último sobreviviente!</p>
+             <p>Utiliza las <b>teclas de flecha</b> para moverte si estás desde un ordenador.</p>
+             <p>Manten presionado tu dedo hacia la dirección en donde deseas moverte si estás desde un smartphone u otro dispositivo similar.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+    <script src = "js/script_menu.js"></script>
+    <!--EXTRA CODE-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>
