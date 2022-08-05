@@ -90,7 +90,7 @@ function renderAvatar (player) {
     // rotate here prior to drawing the eyes,
     // to make the eyes face that the avatar should have
     switch (player.rotation) {
-        case FACING_DOWN: 
+        case FACING_DOWN:
             ctx.rotate(0)
             break
         case FACING_UP:
@@ -258,7 +258,7 @@ document.addEventListener('keydown', function (e) {
         }
 
         switch (myPlayer.rotation) {
-            case FACING_DOWN: 
+            case FACING_DOWN:
                 snowball.vy = SNOWBALL_SPEED
                 break
             case FACING_UP:
@@ -304,7 +304,7 @@ socket.on('stateUpdateForwardedByServer', function (player) {
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-<script src="reloj.js"></script>
+<script src="js/reloj.js"></script>
 
 
 </body>
